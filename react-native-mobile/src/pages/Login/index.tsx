@@ -3,14 +3,18 @@ import { useNavigation } from '@react-navigation/native';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons, Fontisto, AntDesign } from '@expo/vector-icons';
-
+import { StackNavigationProp } from '@react-navigation/stack';
 import styles from './styles';
 
 import api from '../../services/api';
 
-export default function Login() {
+import { StackParamList } from '../../types'
 
-    const navigation = useNavigation();
+type screenNavigationType = StackNavigationProp<StackParamList, 'Login'>
+
+export default function Login() {
+    const navigation = useNavigation<screenNavigationType>();
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState(null);
@@ -19,7 +23,7 @@ export default function Login() {
     async function signIn() {
         try {
             const response = await api.post('/session', {
-                email: 'a@a.com',
+                email: 'nickolas@gmail.com',
                 password: '123Teste456!',
                 type: "donor"
             });
@@ -39,10 +43,8 @@ export default function Login() {
             const { id } = JSON.parse(idObj);
 
             navigation.navigate('Home', {
-                screen: 'UserProfile',
-                params: { id: id },
-                initial: false,
-
+                screen: 'Profile',
+                params: { id: id }
             });
 
         } catch (err) {

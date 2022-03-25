@@ -1,18 +1,20 @@
 import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
-import { useNavigation, NavigatorScreenParams } from '@react-navigation/native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { View, Text, TouchableOpacity, Linking, ScrollView, Alert } from 'react-native';
-
 import styles from './styles';
 import api from '../../services/api';
 
-export default function UserProfile({ route }) {
-    const navigation = useNavigation();
+import { TabParamList } from '../../types';
 
-    const { id } = route.params;
+type profileScreenRouteType = RouteProp<TabParamList, 'Profile'>
 
-    console.log(id)
+export default function UserProfile() {
+    const { params } = useRoute<profileScreenRouteType>();
+    const navigation = useNavigation()
+
+    console.log(params.id)
 
     async function handleLogout() {
         await AsyncStorage.clear();

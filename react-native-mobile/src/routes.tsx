@@ -7,12 +7,17 @@ import { Ionicons } from '@expo/vector-icons';
 import Index from './pages/Index';
 import Login from './pages/Login';
 import Email from './pages/Email';
+import Password from './pages/Password';
+import Register from './pages/Register';
 import Maps from './pages/Maps';
 import UserProfile from './pages/UserProfile';
 import Schedules from './pages/UserProfile';
 
+import { TabParamList } from './types';
+import { StackParamList } from './types';
 
-const Tab = createBottomTabNavigator();
+
+const Tab = createBottomTabNavigator<TabParamList>();
 
 function Home() {
   return (
@@ -45,7 +50,7 @@ function Home() {
   );
 }
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<StackParamList>();
 
 export default function Routes() {
   return (
@@ -55,6 +60,8 @@ export default function Routes() {
         <Stack.Screen name='Index' component={Index} />
         <Stack.Screen name='Login' component={Login} />
         <Stack.Screen name='Email' component={Email} />
+        <Stack.Screen name='Password' component={Password} />
+        <Stack.Screen name='Register' component={Register} />
         <Stack.Screen name='Home' component={Home} />
       </Stack.Navigator>
     </NavigationContainer>

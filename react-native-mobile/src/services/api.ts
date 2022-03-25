@@ -10,41 +10,41 @@ const api = axios.create({
   },
 });
 
-// api.interceptors.request.use(
-//   async config => {
-//     const userAuthToken = await AsyncStorage.getItem('@CodeApi:token');
+api.interceptors.request.use(
+  async config => {
+    const userAuthToken = await AsyncStorage.getItem('@CodeApi:token');
 
-//     config.headers['Authorization'] = 'Bearer ' + userAuthToken
+    config.headers['Authorization'] = 'Bearer ' + userAuthToken
 
-//     return config
-//   },
-//   err => {
-//     Promise.reject(err)
-//   }
-// )
+    return config
+  },
+  err => {
+    Promise.reject(err)
+  }
+)
 
-// api.interceptors.response.use(response => new Promise((resolve, reject) => {
-//   resolve(response);
-// }), error => {
-//   if (!error.response) {
-//     return new Promise((resolve, reject) => {
-//       reject(error)
-//     });
-//   }
-//   if (error.response.status === 403) {
+api.interceptors.response.use(response => new Promise((resolve, reject) => {
+  resolve(response);
+}), error => {
+  if (!error.response) {
+    return new Promise((resolve, reject) => {
+      reject(error)
+    });
+  }
+  if (error.response.status === 403) {
 
-//     const requestConfig = error.config
+    const requestConfig = error.config
 
-//     Alert.alert("Sua sessão expirou!")
+    Alert.alert("Sua sessão expirou!")
 
-//     AsyncStorage.clear();
+    AsyncStorage.clear();
 
-//     return axios(requestConfig)
-//   } else {
-//     return new Promise((resolve, reject) => {
-//       reject(error)
-//     });
-//   }
-// })
+    return axios(requestConfig)
+  } else {
+    return new Promise((resolve, reject) => {
+      reject(error)
+    });
+  }
+})
 
 export default api;

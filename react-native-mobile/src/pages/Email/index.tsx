@@ -3,12 +3,17 @@ import { useNavigation } from '@react-navigation/native';
 import { View, Text, TextInput, ScrollView, TouchableOpacity, Alert, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
+import { StackNavigationProp } from '@react-navigation/stack';
 import styles from './styles'
 import api from '../../services/api';
 
+import { StackParamList } from '../../types'
+
+type screenNavigationType = StackNavigationProp<StackParamList, 'Email'>
+
 export default function Email() {
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<screenNavigationType>();
   const [email, setEmail] = useState('');
   const [errorMessage, setErrorMessage] = useState(null);
 
@@ -33,18 +38,12 @@ export default function Email() {
 
       const user = response.data.email;
 
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Index' }],
-      });
-
       navigation.navigate('Password', { user });
     } catch (err) {
       setErrorMessage(err.response.data.error);
       Alert.alert(err.response.data.error);
     }
   }
-
   return (
     <View style={styles.container}>
       <ScrollView bounces={false} contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps='handled'>

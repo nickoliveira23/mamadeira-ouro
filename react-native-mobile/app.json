@@ -3,6 +3,7 @@
     "name": "blog-react-native-maps",
     "slug": "blog-react-native-maps",
     "version": "1.0.0",
+    "orientation": "portrait",
     "assetBundlePatterns": [
       "**/*"
     ]
