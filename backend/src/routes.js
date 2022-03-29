@@ -22,7 +22,8 @@ routes.post('/user/password', validate.password, UserController.validatePassword
 routes.get('/user/list', UserController.index);
 routes.post('/donor/register', DonorController.create);
 routes.post('/donor/validate', DonorController.validate);
-routes.get('/donor/list', DonorController.index);
+routes.put('/donor/update/:id', DonorController.updateDonor)
+routes.get('/donor/:id', DonorController.indexById);
 routes.post('/session', SessionController.login);
 
 // routes.post('/dependent/register', dependent.validate, DependentController.create);

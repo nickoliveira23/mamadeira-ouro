@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons, Fontisto, AntDesign } from '@expo/vector-icons';
@@ -23,7 +23,7 @@ export default function Login() {
     async function signIn() {
         try {
             const response = await api.post('/session', {
-                email: 'nickolas@gmail.com',
+                email: 'b@b.com',
                 password: '123Teste456!',
                 type: "donor"
             });
@@ -42,10 +42,24 @@ export default function Login() {
             const idObj = JSON.stringify(user);
             const { id } = JSON.parse(idObj);
 
-            navigation.navigate('Home', {
-                screen: 'Profile',
-                params: { id: id }
-            });
+            navigation.dispatch(
+                CommonActions.reset({
+                    index: 0,
+                    routes: [
+                        {
+                            name: "Home",
+                            state: {
+                                routes: [
+                                    {
+                                        name: "Profile",
+                                        params: { id: id }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                })
+            );
 
         } catch (err) {
             setErrorMessage(err.response.data.error);

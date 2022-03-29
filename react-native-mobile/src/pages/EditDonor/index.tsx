@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import MaskInput from 'react-native-mask-input';
 import DateTimePickerModal from "react-native-modal-datetime-picker"
-import { View, Text, TextInput, TouchableOpacity, Alert, Button } from 'react-native';
-import { useNavigation, RouteProp, useRoute } from '@react-navigation/native';
+import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { useNavigation, RouteProp, useRoute, CommonActions } from '@react-navigation/native';
+import { AntDesign } from '@expo/vector-icons';
 import styles from './styles'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -10,14 +11,13 @@ import api from '../../services/api';
 
 import { StackParamList } from '../../types';
 
-type screenNavigationType = StackNavigationProp<StackParamList, 'Register'>
-type passwordScreenRouteType = RouteProp<StackParamList, 'Register'>
+type screenNavigationType = StackNavigationProp<StackParamList, 'EditDonor'>
+type userProfileScreenRouteType = RouteProp<StackParamList, 'EditDonor'>
 
-export default function Register() {
+export default function EditDonor() {
     const navigation = useNavigation<screenNavigationType>();
 
     const [isPickerShow, setIsPickerShow] = useState(false);
-    const [date, setDate] = useState(new Date());
 
     const [name, setName] = useState('');
     const [birth, setBirth] = useState('');
@@ -30,7 +30,27 @@ export default function Register() {
     const [phone, setPhone] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
-    const { params } = useRoute<passwordScreenRouteType>();
+    useEffect(() => {
+        async function LoadData() {
+
+            const response = await api.get(`/donor/${params.id}`);
+
+            const donor = response.data;
+
+            setName(donor.name);
+            setBirth(donor.birth);
+            setStreet(donor.street);
+            setNumber(JSON.stringify(donor.number));
+            setCity(donor.city);
+            setDistrict(donor.district);
+            setUf(donor.uf);
+            setZipCode(donor.zipCode);
+            setPhone(donor.phone);
+        }
+        LoadData();
+    }, []);
+
+    const { params } = useRoute<userProfileScreenRouteType>();
 
 
     const showDatePicker = () => {
@@ -43,15 +63,18 @@ export default function Register() {
 
     const handleConfirm = (date) => {
         // const dataFormatada = date.toLocaleDateString('pt-BR', {timeZone: 'UTC'});
-        setDate(date);
+        setBirth(date);
         hideDatePicker();
     };
 
-    async function handleRegister() {
+    async function handleUpdate() {
         try {
-            await api.post('/donor/validate', {
+
+            console.log(birth)
+
+            const validation = await api.post('/donor/validate', {
                 name: name,
-                birth: date,
+                birth: birth,
                 street: street,
                 number: number,
                 city: city,
@@ -61,9 +84,9 @@ export default function Register() {
                 phone: phone,
             });
 
-            const response = await api.post('/donor/register', {
+            await api.put(`donor/update/${params.id}`, {
                 name: name,
-                birth: date,
+                birth: birth,
                 street: street,
                 number: number,
                 city: city,
@@ -71,30 +94,47 @@ export default function Register() {
                 uf: uf,
                 zipCode: zipCode,
                 phone: phone,
-                id_user: params.id
             });
 
-            Alert.alert('Cadastro realizado com sucesso')
+            Alert.alert(validation.data.message)
 
-            navigation.reset({
-                index: 0,
-                routes: [{ name: 'Index' }],
-            });
+            navigation.dispatch(
+                CommonActions.reset({
+                    index: 0,
+                    routes: [
+                        {
+                            name: "Home",
+                            state: {
+                                routes: [
+                                    {
+                                        name: "Profile",
+                                        params: { id: params.id }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                })
+            );
         } catch (err) {
             setErrorMessage(err.response.data.error);
             Alert.alert(err.response.data.error);
         }
-
     }
+    function navigateBack() {
+        navigation.goBack()
+    }
+
+
     return (
         <View style={{ flex: 1 }}>
             <View style={styles.header}>
-                <View style={{ flex: 1, alignItems: 'center' }}></View>
+                <AntDesign name='left' size={30} style={{ alignSelf: 'flex-start' }} color='rgba(0,0,0, 0.75)' onPress={navigateBack} />
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                     <Text style={{ fontSize: 15, fontWeight: '600', textAlign: 'center' }}>Editar Informações</Text>
                 </View>
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <TouchableOpacity onPress={handleRegister}>
+                    <TouchableOpacity onPress={handleUpdate}>
                         <Text style={{ color: '#ff8c00ad', top: 10, left: 20, fontSize: 15 }}>Concluido</Text>
                     </TouchableOpacity>
                 </View>
@@ -114,7 +154,7 @@ export default function Register() {
                             <Text>{date.toISOString().split('T')[0]}</Text>
                         </View> */}
                         <View style={styles.textInput}>
-                            <Text style={{ marginTop: 10, fontWeight: '200'}} onPress={showDatePicker}>{date.toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</Text>
+                            <Text style={{ marginTop: 10, fontWeight: '200' }} onPress={showDatePicker}>{new Date(birth).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</Text>
                         </View>
                         {isPickerShow && (
                             <DateTimePickerModal
@@ -186,4 +226,5 @@ export default function Register() {
             </KeyboardAwareScrollView>
         </View>
     );
+
 }

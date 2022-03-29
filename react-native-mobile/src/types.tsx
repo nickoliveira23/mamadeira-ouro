@@ -8,6 +8,7 @@ export type StackParamList = {
     Email: undefined;
     Password: { user: string }
     Register: { id: string }
+    EditDonor: { id: string }
 };
 
 export type TabParamList = {

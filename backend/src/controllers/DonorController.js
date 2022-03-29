@@ -26,14 +26,59 @@ module.exports = {
         }
     },
 
-    async index(request, response) {
+    async indexById(request, response) {
         try {
+            const { id } = request.params;
+
             const donor = await connection('donor')
-                .select('*');
+                .where('id_user', id)
+                .select('*')
+                .first();
 
             return response.json(donor)
         } catch (err) {
             console.log(err)
+        }
+
+    },
+
+    async updateDonor(request, response) {
+        try {
+            const {
+                name,
+                birth,
+                street,
+                number,
+                city,
+                district,
+                uf,
+                zipCode,
+                phone
+
+            } = request.body;
+
+            const { id } = request.params;
+
+            const { id_user } = request.params;
+
+            const donor = await connection('donor')
+                .update({
+                    name,
+                    birth,
+                    street,
+                    number,
+                    city,
+                    district,
+                    uf,
+                    zipCode,
+                    phone,
+                })
+                .where({ id })
+
+            return response.json(donor);
+
+        } catch (err) {
+            return response.status(500).json({ error: 'Erro ao atualizar informações de perfil!' });
         }
     },
 
