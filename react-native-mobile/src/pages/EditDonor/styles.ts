@@ -7,11 +7,27 @@ const styles = StyleSheet.create({
 
     header: {
         marginTop: 40,
-        marginBottom: 20,
+        marginBottom: 10,
         flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
+    leftIcon : {
+        marginLeft: 5,
     },
 
-    titulos: {
+    screenTitle: {
+        fontWeight: 'bold',
+        fontSize: 16
+    },
+
+    saveButton: {
+        marginRight: 10,
+        paddingTop: 5,
+        color: "#ff8c00ad",
+        fontWeight: 'bold'
+    },
+
+    label: {
         color: 'rgba(0,0,0, 0.75)',
         fontSize: 16,
         fontWeight: '600',

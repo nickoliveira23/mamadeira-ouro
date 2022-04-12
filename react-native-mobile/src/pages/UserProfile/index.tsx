@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { View, Text, TouchableOpacity, Linking, ScrollView, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import styles from './styles';
 import api from '../../services/api';
 
@@ -26,8 +26,6 @@ export default function UserProfile() {
     const [zipCode, setZipCode] = useState('');
     const [phone, setPhone] = useState('');
 
-    // const date = new Date(2000, 0, 24)
-
     useEffect(() => {
         async function loadDonor() {
             try {
@@ -49,8 +47,7 @@ export default function UserProfile() {
             }
         }
         loadDonor();
-
-    }, []);
+    }, [params.id]);
 
     async function handleLogout() {
         await AsyncStorage.clear();
@@ -86,19 +83,15 @@ export default function UserProfile() {
     return (
         <View style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <View></View>
-
-
-                    <View style={styles.header}>
-                        <View>
-                            <Text style={{ fontSize: 17, fontWeight: 'bold' }}>      User</Text>
-                        </View>
+                <View style={styles.header}>
+                    <View style={styles.viewtitle}>
+                        <Text style={styles.textTitle}>Profile</Text>
                     </View>
-                    <TouchableOpacity style={{ marginTop: 5 }} onPress={createTwoButtonAlert}>
-                        <MaterialIcons name={'logout'} size={25} color={'#808080'}></MaterialIcons>
-                    </TouchableOpacity>
-
+                    <View>
+                        <TouchableOpacity style={styles.logoutIcon} onPress={createTwoButtonAlert}>
+                            <MaterialIcons name={'logout'} size={25} color={'#808080'}></MaterialIcons>
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
                 <View style={styles.profile}>
@@ -132,8 +125,8 @@ export default function UserProfile() {
                 </View>
 
                 <View style={[styles.header, { marginTop: 30 }]}>
-                    <View>
-                        <Text style={{ fontSize: 17, fontWeight: 'bold' }}>Dependents</Text>
+                    <View style={styles.viewtitle}>
+                        <Text style={styles.textTitle}>Dependents</Text>
                     </View>
                 </View>
 

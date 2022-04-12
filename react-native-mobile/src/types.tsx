@@ -14,5 +14,5 @@ export type StackParamList = {
 export type TabParamList = {
     Profile: { id: string };
     Search: { id: string };
-    Schedules: { id: string };
+    Schedule: { id: string };
 };

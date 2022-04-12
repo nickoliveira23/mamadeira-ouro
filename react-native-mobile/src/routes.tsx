@@ -10,9 +10,9 @@ import Email from './pages/Email';
 import Password from './pages/Password';
 import Register from './pages/Register';
 import EditDonor from './pages/EditDonor';
-import Maps from './pages/Maps';
+import Search from './pages/Search';
 import UserProfile from './pages/UserProfile';
-import Schedules from './pages/UserProfile';
+import Schedule from './pages/Schedule';
 
 import { TabParamList } from './types';
 import { StackParamList } from './types';
@@ -33,7 +33,7 @@ function Home() {
             : 'ios-home-outline';
         } else if (route.name === 'Search') {
           iconName = focused ? 'ios-search' : 'ios-search-outline';
-        } else if (route.name === 'Schedules') {
+        } else if (route.name === 'Schedule') {
           iconName = focused ? 'ios-journal' : 'ios-journal-outline';
         }
 
@@ -45,8 +45,8 @@ function Home() {
     })}
     >
       <Tab.Screen name="Profile" component={UserProfile} />
-      <Tab.Screen name="Search" component={Maps} />
-      <Tab.Screen name="Schedules" component={Schedules} />
+      <Tab.Screen name="Search" component={Search} />
+      <Tab.Screen name="Schedule" component={Schedule} />
     </Tab.Navigator>
   );
 }

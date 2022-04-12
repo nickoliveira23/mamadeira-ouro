@@ -23,7 +23,7 @@ export default function Login() {
     async function signIn() {
         try {
             const response = await api.post('/session', {
-                email: 'b@b.com',
+                email: 'c@c.com',
                 password: '123Teste456!',
                 type: "donor"
             });
@@ -53,6 +53,14 @@ export default function Login() {
                                     {
                                         name: "Profile",
                                         params: { id: id }
+                                    },
+                                    {
+                                        name: "Search",
+                                        params: { id: id }
+                                    },
+                                    {
+                                        name: "Schedule",
+                                        params: { id: id }
                                     }
                                 ]
                             }
@@ -60,6 +68,8 @@ export default function Login() {
                     ]
                 })
             );
+
+
 
         } catch (err) {
             setErrorMessage(err.response.data.error);
@@ -77,13 +87,13 @@ export default function Login() {
                     <View style={styles.inputText}>
                         <Ionicons name="md-person" size={24} color="#252525" style={{ marginRight: 0 }} />
                         <View style={{ alignItems: "center", justifyContent: "center", paddingLeft: 10 }}>
-                            <TextInput autoCapitalize="none" autoCorrect={false} style={{ fontSize: 13 }} value={email} onChangeText={email => setEmail(email)} placeholder='E-mail                                                    ' />
+                            <TextInput autoCapitalize="none" autoCorrect={false} style={{ fontSize: 13 }} value={email} onChangeText={email => setEmail(email)} placeholderTextColor="#C0C0C0" placeholder='E-mail                                                    '/>
                         </View>
                     </View>
                     <View style={styles.inputText}>
                         <Fontisto name="locked" size={24} color="#252525" />
                         <View style={{ alignItems: "center", justifyContent: "center", paddingLeft: 10 }}>
-                            <TextInput autoCapitalize="none" autoCorrect={false} style={{ fontSize: 13 }} secureTextEntry={true} value={password} onChangeText={password => setPassword(password)} placeholder='Password                                                    ' />
+                            <TextInput autoCapitalize="none" autoCorrect={false} style={{ fontSize: 13 }} secureTextEntry={true} value={password} onChangeText={password => setPassword(password)} placeholderTextColor="#C0C0C0" placeholder='Password                                                    ' />
                         </View>
                     </View>
                 </View>

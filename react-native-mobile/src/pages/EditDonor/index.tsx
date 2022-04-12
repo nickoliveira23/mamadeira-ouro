@@ -69,9 +69,6 @@ export default function EditDonor() {
 
     async function handleUpdate() {
         try {
-
-            console.log(birth)
-
             const validation = await api.post('/donor/validate', {
                 name: name,
                 birth: birth,
@@ -127,15 +124,15 @@ export default function EditDonor() {
 
 
     return (
-        <View style={{ flex: 1 }}>
+        <View style={styles.container}>
             <View style={styles.header}>
-                <AntDesign name='left' size={30} style={{ alignSelf: 'flex-start' }} color='rgba(0,0,0, 0.75)' onPress={navigateBack} />
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <Text style={{ fontSize: 15, fontWeight: '600', textAlign: 'center' }}>Editar Informações</Text>
+                <AntDesign style={styles.leftIcon}name='left' size={25}  color='rgba(0,0,0, 0.75)' onPress={navigateBack} />
+                <View>
+                    <Text style={styles.screenTitle}>         Editar Informações</Text>
                 </View>
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <View>
                     <TouchableOpacity onPress={handleUpdate}>
-                        <Text style={{ color: '#ff8c00ad', top: 10, left: 20, fontSize: 15 }}>Concluido</Text>
+                        <Text style={styles.saveButton}>Salvar</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -143,12 +140,12 @@ export default function EditDonor() {
                 <View style={{ borderBottomColor: '#CCCCCC', borderBottomWidth: 1, borderTopWidth: 1, borderTopColor: '#CCCCCC', paddingHorizontal: 15, paddingVertical: 15, backgroundColor: '#FFFFFF' }}>
                     {!!errorMessage && <Text style={{ color: '#FF0000', marginBottom: 20, textAlign: 'center' }}>{errorMessage} </Text>}
                     <View style={{ borderBottomWidth: 1, borderBottomColor: '#CCCCCC', paddingBottom: 15 }}>
-                        <Text style={styles.titulos}>   NOME*</Text>
+                        <Text style={styles.label}>   NOME*</Text>
                         <TextInput keyboardType='default' multiline={false} clearButtonMode='always' maxLength={25} style={styles.textInput} placeholder='Adicione o nome' value={name} onChangeText={name => setName(name)} />
                     </View>
                     <View style={{ marginTop: 10, borderBottomWidth: 1, borderBottomColor: '#CCCCCC', paddingBottom: 15 }}>
                         <View style={{ flexDirection: 'row' }}>
-                            <Text style={styles.titulos}>   DATA DE NASCIMENTO*</Text>
+                            <Text style={styles.label}>   DATA DE NASCIMENTO*</Text>
                         </View>
                         {/* <View>
                             <Text>{date.toISOString().split('T')[0]}</Text>
@@ -167,32 +164,32 @@ export default function EditDonor() {
                     </View>
                     <View style={styles.location}>
                         <View style={{ flex: 1, marginTop: 10, borderBottomWidth: 1, borderBottomColor: 'rgba(0,0,0, 0.05)', paddingBottom: 15 }}>
-                            <Text style={styles.titulos}>   RUA</Text>
+                            <Text style={styles.label}>   RUA</Text>
                             <TextInput placeholderTextColor='rgba(0,0,0, 0.50)' placeholder='Adicionar rua' clearButtonMode='always' multiline={false} maxLength={100} style={styles.textInput} value={street} onChangeText={street => setStreet(street)} />
                         </View>
                         <View style={{ width: 100, marginLeft: 20, marginTop: 10, borderBottomWidth: 1, borderBottomColor: 'rgba(0,0,0, 0.05)', paddingBottom: 15 }}>
-                            <Text style={styles.titulos}>   NÚMERO</Text>
+                            <Text style={styles.label}>   NÚMERO</Text>
                             <TextInput keyboardType='numeric' clearButtonMode='always' maxLength={4} style={styles.textInput} placeholder='Num' value={number} onChangeText={number => setNumber(number)} />
                         </View>
                     </View>
                     <View style={{ borderBottomWidth: 1, borderBottomColor: '#CCCCCC', paddingBottom: 15 }}>
-                        <Text style={styles.titulos}>   BAIRRO*</Text>
+                        <Text style={styles.label}>   BAIRRO*</Text>
                         <TextInput keyboardType='default' multiline={false} clearButtonMode='always' maxLength={25} style={styles.textInput} placeholder='Adicione o bairro' value={district} onChangeText={district => setDistrict(district)} />
                     </View>
                     <View style={styles.location}>
                         <View style={{ flex: 1, marginTop: 10, borderBottomWidth: 1, borderBottomColor: 'rgba(0,0,0, 0.05)', paddingBottom: 15 }}>
-                            <Text style={styles.titulos}>   CIDADE</Text>
+                            <Text style={styles.label}>   CIDADE</Text>
                             <TextInput placeholderTextColor='rgba(0,0,0, 0.50)' placeholder='Adicionar Cidade' clearButtonMode='always' multiline={false} maxLength={100} style={styles.textInput} value={city} onChangeText={city => setCity(city)} />
                         </View>
                         <View style={{ width: 60, marginLeft: 20, marginTop: 10, borderBottomWidth: 1, borderBottomColor: 'rgba(0,0,0, 0.05)', paddingBottom: 15 }}>
-                            <Text style={styles.titulos}>   UF</Text>
+                            <Text style={styles.label}>   UF</Text>
                             <TextInput autoCapitalize='characters' placeholderTextColor='rgba(0,0,0, 0.50)' placeholder='UF' clearButtonMode='always' multiline={false} maxLength={2} style={styles.textInput} value={uf} onChangeText={uf => setUf(uf)} />
                         </View>
                     </View>
 
                     <View style={{ marginTop: 10, borderBottomWidth: 1, borderBottomColor: '#CCCCCC', paddingBottom: 15 }}>
                         <View style={{ flexDirection: 'row' }}>
-                            <Text style={styles.titulos}>   CEP*</Text>
+                            <Text style={styles.label}>   CEP*</Text>
                         </View>
                         <MaskInput
                             placeholder='Adicione seu CEP'
@@ -208,7 +205,7 @@ export default function EditDonor() {
                     </View>
                     <View style={{ marginTop: 10, borderBottomWidth: 1, borderBottomColor: '#CCCCCC', paddingBottom: 15 }}>
                         <View style={{ flexDirection: 'row' }}>
-                            <Text style={styles.titulos}>   CELULAR*</Text>
+                            <Text style={styles.label}>   CELULAR*</Text>
                         </View>
                         <MaskInput
                             placeholder='Adicione seu número de celular'

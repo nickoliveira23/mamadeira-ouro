@@ -4,7 +4,6 @@ exports.up = function (knex) {
         table.increments('id');
         table.string('name').notNullable();
 
-        table.integer('id_hospital').references('hospital.id').notNullable().onDelete('CASCADE');
         table.integer('id_user').references('user.id').notNullable().onDelete('CASCADE');
     })
 };

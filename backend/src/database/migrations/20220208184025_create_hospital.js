@@ -11,8 +11,10 @@ exports.up = function (knex) {
         table.string('uf').notNullable();
         table.string('zipCode').notNullable();
         table.string('phone').notNullable();
+        table.string('place_id').notNullable();
 
-        table.integer('id_donor').references('donor.id').notNullable().onDelete('CASCADE');
+        table.integer('id_collaborator').references('collaborator.id').notNullable().onDelete('CASCADE');
+        table.integer('id_donor').references('donor.id').onDelete('CASCADE');
     })
 };
 

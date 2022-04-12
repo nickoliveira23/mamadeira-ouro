@@ -72,8 +72,9 @@ module.exports = {
                     uf,
                     zipCode,
                     phone,
+                    id_user
                 })
-                .where({ id })
+                .where({ id: id })
 
             return response.json(donor);
 

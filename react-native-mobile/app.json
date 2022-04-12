@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "blog-react-native-maps",
-    "slug": "blog-react-native-maps",
+    "name": "react-native-mobile",
+    "slug": "react-native-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
@@ -9,5 +9,5 @@
       "**/*"
     ]
   },
-  "name": "blog-react-native-maps"
+  "name": "react-native-mobile"
 }
