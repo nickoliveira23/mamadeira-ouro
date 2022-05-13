@@ -29,10 +29,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
-  logoutIcon: {
-    margin: 0,
-  },
-
   viewFlatList: {
     flex: 1,
 

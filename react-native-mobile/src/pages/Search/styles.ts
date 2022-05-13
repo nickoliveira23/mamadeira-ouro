@@ -10,13 +10,13 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#F8F8FF",
     flex: 1,
-    paddingHorizontal: 24,
     paddingTop: Constants.statusBarHeight + 50,
   },
 
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    paddingHorizontal: 24,
   },
 
   viewTitle: {
@@ -33,6 +33,37 @@ const styles = StyleSheet.create({
     margin: 0,
   },
 
+  viewButtonSaved: {
+    height: 40,
+    marginHorizontal: 24,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: "#C3C3C5",
+    marginBottom: 20,
+    // backgroundColor: '#FFF',
+    justifyContent: 'center'
+  },
+
+  buttonSaved: {
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+  },
+
+  bookmarkIcon: {
+    marginLeft: 10,
+  },
+
+  textSaved: {
+    fontSize: 15,
+    marginTop: 2,
+    color: '#737380',
+
+  },
+
+  ArrowRightIcon: {
+    marginRight: 10
+  },
+
   textWaiting: {
     fontWeight: 'bold',
     color: '#737380',
@@ -42,6 +73,7 @@ const styles = StyleSheet.create({
 
   viewFlatList: {
     flex: 1,
+    paddingHorizontal: 24,
 
   },
 
@@ -72,11 +104,9 @@ const styles = StyleSheet.create({
   },
 
   buttonText: {
-    color: "#FF0000",
+    color: "#76BFAC",
     fontWeight: 'bold'
-  }
-
-
+  },
 })
 
 export default styles;

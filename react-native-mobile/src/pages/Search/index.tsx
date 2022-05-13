@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from "expo-location";
-import { MaterialIcons, Feather } from '@expo/vector-icons'
-import { Alert, Text, TouchableOpacity, View, FlatList, } from "react-native";
+import { MaterialIcons, Feather, Ionicons } from '@expo/vector-icons'
+import { Alert, Text, Modal, TouchableOpacity, View, FlatList, StyleSheet, Pressable, } from "react-native";
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import api from '../../services/api';
 import styles from "./styles";
@@ -10,8 +10,8 @@ import styles from "./styles";
 import { TabParamList } from '../../types';
 import { StackNavigationProp } from '@react-navigation/stack';
 
-type screenNavigationType = StackNavigationProp<TabParamList, 'Search'>
-type searchScreenRouteType = RouteProp<TabParamList, 'Search'>
+type screenNavigationType = StackNavigationProp<TabParamList, 'Buscar'>
+type searchScreenRouteType = RouteProp<TabParamList, 'Buscar'>
 
 export default function Search() {
     const [hospitals, setHospitals] = useState([]);
@@ -31,9 +31,9 @@ export default function Search() {
             setErrorMsg('Permission to access location was denied');
             return;
         }
-        let location = await Location.getCurrentPositionAsync({});
+        let currentLocation = await Location.getCurrentPositionAsync({});
 
-        setLocation(location);
+        setLocation(currentLocation);
     };
 
     useEffect(() => {
@@ -42,7 +42,7 @@ export default function Search() {
 
     let flag = false;
 
-    let text = 'Waiting..';
+    let text = 'Carregando...';
     if (errorMsg) {
         text = errorMsg;
     } else if (location) {
@@ -61,6 +61,7 @@ export default function Search() {
                 });
 
                 setHospitals(response.data);
+                setIsRefreshing(false)
             }
         } catch (err) {
             Alert.alert('Algo deu errado!')
@@ -86,7 +87,7 @@ export default function Search() {
             "Deseja sair de sua conta?",
             [
                 {
-                    text: "Cancel",
+                    text: "Cancelar",
                     onPress: () => { },
                     style: "cancel"
                 },
@@ -98,41 +99,71 @@ export default function Search() {
         );
     }
 
+    const [isRefreshing, setIsRefreshing] = useState(false)
+
+    const onRefresh = () => {
+        //set isRefreshing to true
+        setIsRefreshing(true);
+        getCurrentPosition();
+        loadData();
+        // and set isRefreshing to false at the end of your callApiMethod()
+    }
+
+    function goToHospitalDetails(hospital) {
+        navigation.navigate('HospitalDetails', { hospital })
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <View style={styles.viewTitle}>
-                    <Text style={styles.textTitle}>Milk Bank</Text>
+                    <Text style={styles.textTitle}>Bancos de leite próximos</Text>
                 </View>
-                <View>
-                    <TouchableOpacity style={styles.logoutIcon} onPress={createTwoButtonAlert}>
-                        <MaterialIcons name={'logout'} size={25} color={'#808080'}></MaterialIcons>
-                    </TouchableOpacity>
-                </View>
+                <TouchableOpacity style={styles.logoutIcon} onPress={createTwoButtonAlert}>
+                    <MaterialIcons name={'logout'} size={25} color={'#414141'} />
+                </TouchableOpacity>
+            </View>
+            <View style={styles.viewButtonSaved}>
+                <TouchableOpacity style={styles.buttonSaved}>
+                    <View style={styles.bookmarkIcon}>
+                        <Ionicons name="star" size={20} color="#76BFAC" />
+                    </View>
+                    <View>
+                        <Text style={styles.textSaved}>Mostrar hospitais salvos</Text>
+                    </View>
+                    <View style={styles.ArrowRightIcon}>
+                        <Feather name="arrow-right" size={20} color="#76BFAC" />
+                    </View>
+                </TouchableOpacity>
             </View>
             <View style={styles.viewFlatList}>
                 {!flag && <Text style={styles.textWaiting}>{text}</Text>}
                 <FlatList
+                    onRefresh={onRefresh}
+                    refreshing={isRefreshing}
                     data={hospitals}
+                    showsVerticalScrollIndicator={false}
                     keyExtractor={hospital => String(hospital.id)}
+
                     renderItem={({ item: hospital }) => (
                         <View style={styles.hospitals}>
                             <View>
-                                <Text style={styles.hospitalProperty}>NAME</Text>
+                                <Text style={styles.hospitalProperty}>NOME</Text>
                                 <Text style={styles.hospitalValue}>{hospital.company}</Text>
                             </View>
                             <View>
-                                <Text style={styles.hospitalProperty}>CONTACT</Text>
-                                <Text style={styles.hospitalValue}>{hospital.phone}</Text>
+                                <Text style={styles.hospitalProperty}>ENDEREÇO</Text>
+                                <Text style={styles.hospitalValue}>
+                                    {hospital.street}, {hospital.number} - {hospital.district}, {hospital.city} - {hospital.uf}, {hospital.zipCode}
+                                </Text>
                             </View>
                             <View style={styles.button}>
-                                <TouchableOpacity onPress={() => { }}>
-                                    <Text style={styles.buttonText}>See more...</Text>
-
+                                <TouchableOpacity onPress={() => goToHospitalDetails(hospital)}>
+                                    <Text style={styles.buttonText}>Detalhes...</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => { }}>
-                                    <Feather name="arrow-right" color="#FF0000" size={20} onPress={() => { }} />
-                                </TouchableOpacity>
+                                <View>
+                                    <Feather name="arrow-right" color="#76BFAC" size={20} onPress={() => goToHospitalDetails(hospital)} />
+                                </View>
                             </View>
                         </View>
                     )}
@@ -141,3 +172,5 @@ export default function Search() {
         </View>
     );
 }
+
+  

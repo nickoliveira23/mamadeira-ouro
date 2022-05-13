@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import MaskInput from 'react-native-mask-input';
 import DateTimePickerModal from "react-native-modal-datetime-picker"
-import { View, Text, TextInput, TouchableOpacity, Alert, Button } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { useNavigation, RouteProp, useRoute } from '@react-navigation/native';
 import styles from './styles'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { AntDesign } from '@expo/vector-icons';
 import { StackNavigationProp } from '@react-navigation/stack';
 import api from '../../services/api';
 
 import { StackParamList } from '../../types';
 
 type screenNavigationType = StackNavigationProp<StackParamList, 'Register'>
-type passwordScreenRouteType = RouteProp<StackParamList, 'Register'>
+type registerScreenRouteType = RouteProp<StackParamList, 'Register'>
 
 export default function Register() {
     const navigation = useNavigation<screenNavigationType>();
@@ -30,7 +30,7 @@ export default function Register() {
     const [phone, setPhone] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
-    const { params } = useRoute<passwordScreenRouteType>();
+    const { params } = useRoute<registerScreenRouteType>();
 
 
     const showDatePicker = () => {
@@ -87,34 +87,43 @@ export default function Register() {
 
     }
     return (
-        <View style={{ flex: 1 }}>
+        <View style={styles.container}>
             <View style={styles.header}>
-                <View style={{ flex: 1, alignItems: 'center' }}></View>
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <Text style={{ fontSize: 15, fontWeight: '600', textAlign: 'center' }}>Editar Informações</Text>
-                </View>
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <TouchableOpacity onPress={handleRegister}>
-                        <Text style={{ color: '#ff8c00ad', top: 10, left: 20, fontSize: 15 }}>Concluido</Text>
-                    </TouchableOpacity>
-                </View>
+                <AntDesign
+                    style={styles.leftIcon}
+                    name='left'
+                    size={25}
+                    color='#414141'
+                    onPress={() => { }}
+                />
+                <Text style={styles.screenTitle}>Editar Informações</Text>
+                <TouchableOpacity onPress={handleRegister}>
+                    <Text style={styles.saveButton}>Salvar</Text>
+                </TouchableOpacity>
             </View>
-            <KeyboardAwareScrollView showsVerticalScrollIndicator={false} style={styles.container}>
-                <View style={{ borderBottomColor: '#CCCCCC', borderBottomWidth: 1, borderTopWidth: 1, borderTopColor: '#CCCCCC', paddingHorizontal: 15, paddingVertical: 15, backgroundColor: '#FFFFFF' }}>
-                    {!!errorMessage && <Text style={{ color: '#FF0000', marginBottom: 20, textAlign: 'center' }}>{errorMessage} </Text>}
-                    <View style={{ borderBottomWidth: 1, borderBottomColor: '#CCCCCC', paddingBottom: 15 }}>
-                        <Text style={styles.titulos}>   NOME*</Text>
-                        <TextInput keyboardType='default' multiline={false} clearButtonMode='always' maxLength={25} style={styles.textInput} placeholder='Adicione o nome' value={name} onChangeText={name => setName(name)} />
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <View style={styles.content}>
+                    {!!errorMessage && <Text style={styles.errorMessage}>{errorMessage} </Text>}
+                    <View style={styles.viewInput}>
+                        <Text style={styles.titles}>NOME*</Text>
+                        <TextInput
+                            style={styles.textInput}
+                            keyboardType='default'
+                            multiline={false}
+                            clearButtonMode='always'
+                            maxLength={25}
+                            placeholder='Adicione o nome'
+                            placeholderTextColor="#C3C3C5"
+                            value={name}
+                            onChangeText={name => setName(name)}
+                        />
                     </View>
-                    <View style={{ marginTop: 10, borderBottomWidth: 1, borderBottomColor: '#CCCCCC', paddingBottom: 15 }}>
-                        <View style={{ flexDirection: 'row' }}>
-                            <Text style={styles.titulos}>   DATA DE NASCIMENTO*</Text>
-                        </View>
-                        {/* <View>
-                            <Text>{date.toISOString().split('T')[0]}</Text>
-                        </View> */}
+                    <View style={styles.viewInput}>
+                        <Text style={styles.titles}>DATA DE NASCIMENTO*</Text>
                         <View style={styles.textInput}>
-                            <Text style={{ marginTop: 10, fontWeight: '200'}} onPress={showDatePicker}>{date.toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</Text>
+                            <Text style={{ marginTop: 10, fontWeight: '200' }} onPress={showDatePicker}>
+                                {date.toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
+                            </Text>
                         </View>
                         {isPickerShow && (
                             <DateTimePickerModal
@@ -126,38 +135,83 @@ export default function Register() {
                         )}
                     </View>
                     <View style={styles.location}>
-                        <View style={{ flex: 1, marginTop: 10, borderBottomWidth: 1, borderBottomColor: 'rgba(0,0,0, 0.05)', paddingBottom: 15 }}>
-                            <Text style={styles.titulos}>   RUA</Text>
-                            <TextInput placeholderTextColor='rgba(0,0,0, 0.50)' placeholder='Adicionar rua' clearButtonMode='always' multiline={false} maxLength={100} style={styles.textInput} value={street} onChangeText={street => setStreet(street)} />
+                        <View style={styles.viewColOne}>
+                            <Text style={styles.titles}>RUA</Text>
+                            <TextInput
+                                style={styles.textInput}
+                                placeholderTextColor='#C3C3C5'
+                                placeholder='Adicionar rua'
+                                clearButtonMode='always'
+                                multiline={false}
+                                maxLength={100}
+                                value={street}
+                                onChangeText={street => setStreet(street)}
+                            />
                         </View>
-                        <View style={{ width: 100, marginLeft: 20, marginTop: 10, borderBottomWidth: 1, borderBottomColor: 'rgba(0,0,0, 0.05)', paddingBottom: 15 }}>
-                            <Text style={styles.titulos}>   NÚMERO</Text>
-                            <TextInput keyboardType='numeric' clearButtonMode='always' maxLength={4} style={styles.textInput} placeholder='Num' value={number} onChangeText={number => setNumber(number)} />
+                        <View style={styles.viewColTwo}>
+                            <Text style={styles.titles}>NÚMERO</Text>
+                            <TextInput
+                                style={styles.textInput}
+                                placeholderTextColor='#C3C3C5'
+                                placeholder='227'
+                                keyboardType='numeric'
+                                clearButtonMode='always'
+                                maxLength={4}
+                                value={number}
+                                onChangeText={number => setNumber(number)}
+                            />
                         </View>
                     </View>
-                    <View style={{ borderBottomWidth: 1, borderBottomColor: '#CCCCCC', paddingBottom: 15 }}>
-                        <Text style={styles.titulos}>   BAIRRO*</Text>
-                        <TextInput keyboardType='default' multiline={false} clearButtonMode='always' maxLength={25} style={styles.textInput} placeholder='Adicione o bairro' value={district} onChangeText={district => setDistrict(district)} />
+                    <View style={styles.viewInput}>
+                        <Text style={styles.titles}>BAIRRO*</Text>
+                        <TextInput
+                            style={styles.textInput}
+                            placeholderTextColor='#C3C3C5'
+                            placeholder='Adicione o bairro'
+                            keyboardType='default'
+                            multiline={false}
+                            clearButtonMode='always'
+                            maxLength={25}
+                            value={district}
+                            onChangeText={district => setDistrict(district)}
+                        />
                     </View>
                     <View style={styles.location}>
-                        <View style={{ flex: 1, marginTop: 10, borderBottomWidth: 1, borderBottomColor: 'rgba(0,0,0, 0.05)', paddingBottom: 15 }}>
-                            <Text style={styles.titulos}>   CIDADE</Text>
-                            <TextInput placeholderTextColor='rgba(0,0,0, 0.50)' placeholder='Adicionar Cidade' clearButtonMode='always' multiline={false} maxLength={100} style={styles.textInput} value={city} onChangeText={city => setCity(city)} />
+                        <View style={styles.viewColOne}>
+                            <Text style={styles.titles}>CIDADE</Text>
+                            <TextInput
+                                style={styles.textInput}
+                                placeholderTextColor='#C3C3C5'
+                                placeholder='Adicionar Cidade'
+                                clearButtonMode='always'
+                                multiline={false}
+                                maxLength={100}
+                                value={city}
+                                onChangeText={city => setCity(city)}
+                            />
                         </View>
-                        <View style={{ width: 60, marginLeft: 20, marginTop: 10, borderBottomWidth: 1, borderBottomColor: 'rgba(0,0,0, 0.05)', paddingBottom: 15 }}>
-                            <Text style={styles.titulos}>   UF</Text>
-                            <TextInput autoCapitalize='characters' placeholderTextColor='rgba(0,0,0, 0.50)' placeholder='UF' clearButtonMode='always' multiline={false} maxLength={2} style={styles.textInput} value={uf} onChangeText={uf => setUf(uf)} />
+                        <View style={styles.viewColTwo}>
+                            <Text style={styles.titles}>UF</Text>
+                            <TextInput
+                                autoCapitalize='characters'
+                                style={styles.textInput}
+                                placeholderTextColor='#C3C3C5'
+                                placeholder='UF'
+                                clearButtonMode='always'
+                                multiline={false}
+                                maxLength={2}
+                                value={uf}
+                                onChangeText={uf => setUf(uf)}
+                            />
                         </View>
                     </View>
-
-                    <View style={{ marginTop: 10, borderBottomWidth: 1, borderBottomColor: '#CCCCCC', paddingBottom: 15 }}>
-                        <View style={{ flexDirection: 'row' }}>
-                            <Text style={styles.titulos}>   CEP*</Text>
-                        </View>
+                    <View style={styles.viewInput}>
+                        <Text style={styles.titles}>CEP*</Text>
                         <MaskInput
+                            style={styles.textInput}
+                            placeholderTextColor='#C3C3C5'
                             placeholder='Adicione seu CEP'
                             keyboardType='numeric'
-                            style={styles.textInput}
                             clearButtonMode='always'
                             value={zipCode}
                             onChangeText={(masked, unmasked) => {
@@ -166,14 +220,13 @@ export default function Register() {
                             mask={[/\d/, /\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/]}
                         />
                     </View>
-                    <View style={{ marginTop: 10, borderBottomWidth: 1, borderBottomColor: '#CCCCCC', paddingBottom: 15 }}>
-                        <View style={{ flexDirection: 'row' }}>
-                            <Text style={styles.titulos}>   CELULAR*</Text>
-                        </View>
+                    <View style={styles.viewInput}>
+                        <Text style={styles.titles}>CELULAR*</Text>
                         <MaskInput
+                            style={styles.textInput}
+                            placeholderTextColor='#C3C3C5'
                             placeholder='Adicione seu número de celular'
                             keyboardType='numeric'
-                            style={styles.textInput}
                             clearButtonMode='always'
                             value={phone}
                             onChangeText={(masked, unmasked) => {
@@ -183,7 +236,7 @@ export default function Register() {
                         />
                     </View>
                 </View>
-            </KeyboardAwareScrollView>
+            </ScrollView>
         </View>
     );
 }

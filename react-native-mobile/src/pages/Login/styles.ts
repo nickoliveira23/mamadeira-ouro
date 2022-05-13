@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 import Constants from 'expo-constants';
 
 
@@ -6,68 +6,79 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
-    paddingTop: Constants.statusBarHeight + 20,
-  },
-
-  elements: {
-    flex: 1,
-    justifyContent: 'center'
+    paddingTop: Constants.statusBarHeight + 50,
   },
 
   header: {
-    left: 30,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+
+  leftIcon: {
+    marginLeft: '5%'
+  },
+
+  content: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: '10%'
+  },
+
+  viewTitle: {
+    marginBottom: '10%'
   },
 
   title: {
-    textAlign: 'center',
-    fontSize: 55,
     fontWeight: 'bold',
-    color: 'rgba(0,0,0, 0.75)'
+    fontSize: 45,
+    color: "#414141"
   },
 
-  inputArea: {
-    alignItems: 'center',
+  inputViews: {
+
+  },
+
+  inputTextView: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderColor: "#C3C3C5",
+    padding: 15,
+    marginBottom: 40,
   },
 
   inputText: {
-    marginTop: 20,
-    height: 50,
-    width: 300,
-    borderWidth: 1,
-    borderRadius: 10,
-    borderColor: '#C3C3C5',
-    flexDirection: 'row',
-    padding: 10
+    width: Dimensions.get('window').width - 150,
+    marginLeft: 5,
+    fontSize: 15,
+    color: '#414141',
+    paddingLeft: 10
   },
 
-  confirmation: {
+  rememberText: {
+    color: '#C3C3C5',
+    fontSize: 11,
+    textAlign: 'center'
+  },
+
+  errorMessage: {
+    color: '#FF0000',
+    marginBottom: 20,
+    textAlign: 'center'
+  },
+
+  viewButton: {
     marginTop: 50,
-    alignItems: 'center'
-  },
-
-  alertMessage: {
-    marginTop: 40,
-    textAlign: 'center',
-    color: 'rgba(0,0,0,0.46)',
-    fontSize: 10,
-    width: 250
   },
 
   button: {
-    width: 300,
-    height: 53,
+    width: Dimensions.get('window').width - 60,
+    padding: 18,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 25,
+    borderColor: '#707070',
     borderWidth: 1,
-    borderColor: 'rgb(195,195,197)', 
-    marginBottom: 50
-    
   },
-
-  textButton: {
-    color: '#707070',
-  }
 })
 
 export default styles;

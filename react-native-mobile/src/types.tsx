@@ -9,10 +9,13 @@ export type StackParamList = {
     Password: { user: string }
     Register: { id: string }
     EditDonor: { id: string }
+    Dependent: { id: string, id_donor: string }
+    EditDependent: { id: string, id_donor: string, dependent: object }
+    HospitalDetails: { hospital: object }
 };
 
 export type TabParamList = {
-    Profile: { id: string };
-    Search: { id: string };
-    Schedule: { id: string };
+    Perfil: { id: string };
+    Buscar: { id: string };
+    Agenda: { id: string };
 };

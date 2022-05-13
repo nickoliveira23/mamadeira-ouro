@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
     container: {
@@ -35,7 +35,8 @@ const styles = StyleSheet.create({
         borderBottomColor: '#C3C3C5',
         borderTopColor: '#C3C3C5',
         padding: 15,
-        backgroundColor: '#FFFFFF'
+        backgroundColor: '#FFFFFF',
+        height: Dimensions.get('window').height,
     },
 
     errorMessage: {
@@ -71,23 +72,6 @@ const styles = StyleSheet.create({
         height: 50,
         width: 220,
     },
-
-    location: {
-        flexDirection: 'row',
-        marginBottom: 15
-    },
-
-    viewColOne: {
-        flex: 1,
-        marginTop: 10,
-    },
-
-    viewColTwo: {
-        width: '30%',
-        marginLeft: 20,
-        marginTop: 10,
-    }
-
 })
 
 export default styles;

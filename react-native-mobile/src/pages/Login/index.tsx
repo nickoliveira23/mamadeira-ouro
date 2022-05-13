@@ -23,8 +23,10 @@ export default function Login() {
     async function signIn() {
         try {
             const response = await api.post('/session', {
-                email: 'c@c.com',
+                email: 'b@b.com',
                 password: '123Teste456!',
+                // email: email,
+                // password: password,
                 type: "donor"
             });
 
@@ -51,15 +53,15 @@ export default function Login() {
                             state: {
                                 routes: [
                                     {
-                                        name: "Profile",
+                                        name: "Perfil",
                                         params: { id: id }
                                     },
                                     {
-                                        name: "Search",
+                                        name: "Buscar",
                                         params: { id: id }
                                     },
                                     {
-                                        name: "Schedule",
+                                        name: "Agenda",
                                         params: { id: id }
                                     }
                                 ]
@@ -68,10 +70,8 @@ export default function Login() {
                     ]
                 })
             );
-
-
-
         } catch (err) {
+            console.log(err)
             setErrorMessage(err.response.data.error);
         }
     }
@@ -79,31 +79,45 @@ export default function Login() {
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.header} onPress={() => navigation.goBack()}>
-                <AntDesign name='left' size={30} color='#252525' />
+                <AntDesign style={styles.leftIcon} name='left' size={30} color='#414141' />
             </TouchableOpacity>
-            <View style={styles.elements}>
-                <Text style={styles.title}>Sign In</Text>
-                <View style={styles.inputArea}>
-                    <View style={styles.inputText}>
-                        <Ionicons name="md-person" size={24} color="#252525" style={{ marginRight: 0 }} />
-                        <View style={{ alignItems: "center", justifyContent: "center", paddingLeft: 10 }}>
-                            <TextInput autoCapitalize="none" autoCorrect={false} style={{ fontSize: 13 }} value={email} onChangeText={email => setEmail(email)} placeholderTextColor="#C0C0C0" placeholder='E-mail                                                    '/>
-                        </View>
+            <View style={styles.content}>
+                <View style={styles.viewTitle}>
+                    <Text style={styles.title}>Entrar</Text>
+                </View>
+                <View style={styles.inputViews}>
+                    <View style={styles.inputTextView}>
+                        <Ionicons name="md-person" size={24} color="#414141" />
+                        <TextInput
+                            autoCapitalize="none"
+                            autoCorrect={false}
+                            style={styles.inputText}
+                            value={email}
+                            onChangeText={email => setEmail(email)}
+                            placeholderTextColor="#C3C3C5"
+                            placeholder='E-mail'
+                        />
                     </View>
-                    <View style={styles.inputText}>
-                        <Fontisto name="locked" size={24} color="#252525" />
-                        <View style={{ alignItems: "center", justifyContent: "center", paddingLeft: 10 }}>
-                            <TextInput autoCapitalize="none" autoCorrect={false} style={{ fontSize: 13 }} secureTextEntry={true} value={password} onChangeText={password => setPassword(password)} placeholderTextColor="#C0C0C0" placeholder='Password                                                    ' />
-                        </View>
+                    <View style={styles.inputTextView}>
+                        <Fontisto name="locked" size={24} color="#414141" />
+                        <TextInput
+                            autoCapitalize="none"
+                            autoCorrect={false}
+                            secureTextEntry={true}
+                            style={styles.inputText}
+                            value={password}
+                            onChangeText={password => setPassword(password)}
+                            placeholderTextColor="#C3C3C5"
+                            placeholder='Senha'
+                        />
                     </View>
                 </View>
-                <View style={styles.confirmation}>
-                    {!!errorMessage && <Text style={{ color: '#FF0000', marginBottom: 20 }}>{errorMessage} </Text>}
+                <Text style={styles.rememberText}>Lembre-se, não compartilhe sua senha com ninguém!</Text>
+                {!!errorMessage && <Text style={styles.errorMessage}>{errorMessage} </Text>}
+                <View style={styles.viewButton}>
                     <TouchableOpacity onPress={signIn} style={styles.button}>
-                        <Text style={styles.textButton}>Confirm</Text>
+                        <Text>Confirmar</Text>
                     </TouchableOpacity>
-                    <Text style={styles.alertMessage}>Remember, do not share your password with anyone!
-                    </Text>
                 </View>
             </View>
         </View>

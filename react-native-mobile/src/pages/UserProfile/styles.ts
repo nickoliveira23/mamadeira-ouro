@@ -5,7 +5,7 @@ import Constants from 'expo-constants';
 
 export default StyleSheet.create({
     container: {
-        backgroundColor: "#F8F8FF",
+        backgroundColor: "#F8F8F8",
         flex: 1,
         paddingHorizontal: 24,
         paddingTop: Constants.statusBarHeight + 50,
@@ -26,14 +26,13 @@ export default StyleSheet.create({
         fontWeight: 'bold',
     },
 
-    logoutIcon: {
-        margin: 0,
-    },
-
     icon: {
         position: 'absolute',
         right: 0,
-        padding: 15
+        padding: 15,
+        // backgroundColor: '#76BFAC',
+        // borderBottomStartRadius: 10,
+        
     },
 
     profile: {
@@ -44,15 +43,32 @@ export default StyleSheet.create({
 
     profileProperty: {
         fontSize: 14,
-        color: '#41414D',
+        color: '#414141',
         fontWeight: 'bold',
     },
 
     profileValue: {
         fontSize: 15,
-        color: '#737380',
+        color: '#737373',
         marginTop: 8,
         marginBottom: 24
+    },
 
-    }
+    textWaiting: {
+        fontWeight: 'bold',
+        color: '#737380',
+        textAlign: 'center',
+        marginTop: "50%"
+      },
+
+    viewFlatList: {
+
+    },
+
+    newButton: {
+        marginRight: 10,
+        paddingTop: 5,
+        color: "#76BFAC",
+        fontWeight: 'bold'
+    },
 })
