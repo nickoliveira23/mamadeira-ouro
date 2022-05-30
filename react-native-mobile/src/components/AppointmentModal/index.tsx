@@ -1,9 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { Alert, Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { CommonActions, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { MaterialIcons, AntDesign } from '@expo/vector-icons'
+import { StackNavigationProp } from '@react-navigation/stack';
 import styles from './styles'
-import { Alert, Modal, Text, TouchableOpacity, View } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+
+import api from '../../services/api';
+
+//Importando o type referente a essa tela
+import { StackParamList } from '../../types';
+
+/*Aqui é criado um type para que ao navegar entre telas seja possível passar 
+parâmetros definidos no StackParamList onde foi declarado quais parametros 
+cada tela recebe*/
+type screenNavigationType = StackNavigationProp<StackParamList, 'HospitalDetails'>
+type hospitalDetailsScreenRouteType = RouteProp<StackParamList, 'HospitalDetails'>
 
 const months = [
     'Janeiro',
@@ -20,23 +31,25 @@ const months = [
     'Dezembro',
 ];
 
-const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
+const days = [
+    'Dom',
+    'Seg',
+    'Ter',
+    'Qua',
+    'Qui',
+    'Sex',
+    'Sab'
+];
 
-import { StackNavigationProp } from '@react-navigation/stack';
-import { StackParamList } from '../../types';
-import api from '../../services/api';
-
-type screenNavigationType = StackNavigationProp<StackParamList, ' '>
-
-export default ({ show, setShow, hospital }) => {
-
+export default ({ show, setShow, hospital, id_donor, id_user }: any) => {
     const navigation = useNavigation<screenNavigationType>()
+    const route = useRoute<hospitalDetailsScreenRouteType>();
 
     const [selectedYear, setSelectedYear] = useState(0);
     const [selectedMonth, setSelectedMonth] = useState(0);
     const [selectedDay, setSelectedDay] = useState(0);
-    const [selectedHour, setSelectedHour] = useState(null);
-    const [listDays, setListDays] = useState([]);
+    const [selectedHour, setSelectedHour] = useState<any>(null);
+    const [listDays, setListDays] = useState<any[]>([]);
     const [listHours, setListHours] = useState([]);
 
     useEffect(() => {
@@ -56,11 +69,11 @@ export default ({ show, setShow, hospital }) => {
             month = month < 10 ? '0' + month : month;
             day = day < 10 ? '0' + day : day;
             let selDate = `${day}/${month}/${year}`;
-            let availability = hospital.available.filter((e) => e.date === selDate);
-
+            let availability = hospital.available.filter((e: any) => e.date === selDate);
             if (availability.length > 0) {
                 setListHours(availability[0].hour);
             }
+            console.log(availability)
         }
         setSelectedHour(null);
     }, [hospital, selectedDay]);
@@ -79,7 +92,7 @@ export default ({ show, setShow, hospital }) => {
                 month = month < 10 ? '0' + month : month;
                 day = day < 10 ? '0' + day : day;
                 let selDate = `${day}/${month}/${year}`;
-                let availability = hospital.available.filter((e) => e.date === selDate);
+                let availability = hospital.available.filter((e: any) => e.date === selDate);
 
                 newListDays.push({
                     status: availability.length > 0 ? true : false,
@@ -88,10 +101,11 @@ export default ({ show, setShow, hospital }) => {
                 });
             }
             setListDays(newListDays);
+            console.log(newListDays)
             setSelectedDay(0);
             setListHours([]);
-            setSelectedHour(0);
-
+            setSelectedHour(null);
+                                            
         }
     }, [hospital, selectedMonth, selectedYear]);
 
@@ -100,32 +114,52 @@ export default ({ show, setShow, hospital }) => {
     };
 
     const handleFinishClick = async () => {
-        if (
-            hospital.id &&
-            selectedYear > 0 &&
-            selectedMonth > 0 &&
-            selectedDay > 0 &&
-            selectedHour != null
-        ) {
-            // let res = await api.post('/schedule/register', {
-            //     date_time: new Date(),
-            //     date: `${selectedYear}-${selectedMonth + 1}-${selectedDay}`,
-            //     hour: selectedHour,
-            //     id_hospital: hospital.id,
-            //     id_donor:
+        try {
+            if (hospital.id &&
+                selectedYear > 0 &&
+                selectedMonth > 0 &&
+                selectedDay > 0 &&
+                selectedHour != null) {
 
-            // });
+                let date_time = new Date(selectedYear, selectedMonth, selectedDay)
 
-            // if (res.error == '') {
-            //     setShow(false);
-            //     // navigation.navigate('Appointments');
-            // } else {
-            //     alert(res.error);
-            // }
-        } else {
-            Alert.alert('Preencha todos os dados');
+                let year = date_time.getFullYear();
+                let month: string | number = date_time.getMonth() + 1;
+                let day: string | number = date_time.getDate();
+                month = month < 10 ? '0' + month : month;
+                day = day < 10 ? '0' + day : day;
+
+                let hour = selectedHour.split(':')
+
+                date_time = new Date(Date.UTC(selectedYear, selectedMonth, selectedDay, hour[0], hour[1], hour[2]))
+
+                await api.post('/schedule/register', {
+                    date_time: date_time,
+                    date: `${year}-${month}-${day}`,
+                    hour: selectedHour,
+                    id_donor: id_donor,
+                    id_hospital: hospital.id,
+                    status: 'Pendente'
+                });
+
+                navigation.dispatch(
+                    CommonActions.navigate({
+                        name: 'Agenda',
+                        params: {
+                            id: id_user
+                        }
+                    })
+                )
+                Alert.alert('Agendamento realizado com sucesso!')
+                setShow(false);
+            } else {
+                Alert.alert('Preencha todos os dados');
+            }
+        } catch (err: any) {
+            Alert.alert(err.response.error)
         }
     };
+
     const handleLeftDateClick = () => {
         let mountDate = new Date(selectedYear, selectedMonth, 1);
         mountDate.setMonth(mountDate.getMonth() - 1);
@@ -141,7 +175,6 @@ export default ({ show, setShow, hospital }) => {
         setSelectedMonth(mountDate.getMonth());
         setSelectedDay(0);
     };
-
 
     return (
         <Modal
@@ -183,7 +216,7 @@ export default ({ show, setShow, hospital }) => {
                             </TouchableOpacity>
                         </View>
                         <ScrollView style={styles.dateList} horizontal={true} showsHorizontalScrollIndicator={false}>
-                            {listDays.map((item, key) => (
+                            {listDays.map((item: any, key: any) => (
                                 <TouchableOpacity
                                     style={[styles.dateItem,
                                     { opacity: item.status ? 1 : 0.5, backgroundColor: item.number === selectedDay ? '#76BFAC' : '#FFFFFF' }]}
@@ -223,7 +256,6 @@ export default ({ show, setShow, hospital }) => {
                             </ScrollView>
                         </View>
                     )}
-
                     <TouchableOpacity style={styles.finishButton} onPress={handleFinishClick}>
                         <Text style={styles.finishButtonText}>AGENDAR</Text>
                     </TouchableOpacity>

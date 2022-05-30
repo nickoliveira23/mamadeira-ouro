@@ -1,22 +1,22 @@
 import { StyleSheet } from 'react-native';
+import Constants from 'expo-constants';
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#ECF3F1',
-    },
-
-    logo: {
-        width: 280,
-        resizeMode: 'contain',
-        marginBottom: 50
+        paddingTop: Constants.statusBarHeight + 60,
     },
 
     infoView: {
-        flex: 1,
         alignItems: 'center',
         justifyContent: 'flex-end',
-        marginBottom: 35
+        paddingBottom: 25,
+    },
+
+    logo: {
+        width: 500,
+        height: 200,
     },
 
     termsText: {
@@ -28,13 +28,12 @@ const styles = StyleSheet.create({
     },
 
     buttonsView: {
-        flex: 1,
         alignItems: 'center',
     },
 
     button: {
-        width: '80%',
-        height: '18%',
+        width: '85%',
+        height: 60,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 30,

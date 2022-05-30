@@ -65,6 +65,38 @@ module.exports = {
         }
     },
 
+    //Método de listagem por id
+    async indexWithHospital(request, response) {
+        try {
+            //Recebendo o id de usuário pelos parâmetros da requisição
+            const { user } = request.params;
+
+            /*Na tabela de doadora é feito um select onde o id é igual ao id recebido pelo cliente, 
+            o retorno será somente o id da doadora*/
+            const [donor] = await connection('donor')
+                .select('id')
+                .where('id_user', user)
+
+            /*Na tabela de agendamentos é feito um select onde o id é igual ao id retornado pela consulta,
+            além disso é feito um inner join na tabela hospital para trazer os registros do hospital também, 
+            o retorno povoa a váriavel 'schedule' com um objeto contendo o registro*/
+            const schedule = await connection('schedule')
+                .join('hospital', 'id_hospital', '=', 'hospital.id')
+                .where('schedule.id_donor', donor.id)
+                .select([
+                    'hospital.*',
+                    'schedule.*'
+                ]);
+
+            //Em caso de sucesso é retornado o objeto com o registro
+            return response.json(schedule)
+        } catch (err) {
+            //Em caso de falha é exibido no terminal o erro
+            console.log(err)
+            return response.json({ error: 'Falha ao exibir agendamentos!' })
+        }
+    },
+
     async delete(request, response) {
         try {
             const { id } = request.params;
@@ -73,15 +105,10 @@ module.exports = {
                 .where('id', id)
                 .delete()
 
-            return response.json('Registro deletado com sucesso');
-        } catch (error) {
-            console.log(error)
+            return response.json({ message: 'Registro deletado com sucesso' });
+        } catch (err) {
+            console.log(err)
+            return response.json({ error: 'Falha ao deletar registro' })
         }
-
-
     }
-
-    // async changeStatus() {
-
-    // }
 }

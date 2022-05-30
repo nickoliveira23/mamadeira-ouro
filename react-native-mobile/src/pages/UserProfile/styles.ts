@@ -29,10 +29,7 @@ export default StyleSheet.create({
     icon: {
         position: 'absolute',
         right: 0,
-        padding: 15,
-        // backgroundColor: '#76BFAC',
-        // borderBottomStartRadius: 10,
-        
+        padding: 15,        
     },
 
     profile: {
@@ -68,7 +65,7 @@ export default StyleSheet.create({
     newButton: {
         marginRight: 10,
         paddingTop: 5,
-        color: "#76BFAC",
+        color: "#A1E1D8",
         fontWeight: 'bold'
     },
 })

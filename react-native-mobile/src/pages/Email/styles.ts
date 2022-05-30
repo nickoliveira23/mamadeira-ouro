@@ -46,10 +46,6 @@ const styles = StyleSheet.create({
         marginBottom: 40,
     },
 
-    // personIcon: {
-    //     paddingTop: 5,
-    // },
-
     emailInput: {
         width: Dimensions.get('window').width - 100,
         paddingTop: 10,
@@ -62,7 +58,6 @@ const styles = StyleSheet.create({
 
     errorMessage: {
         color: '#FF0000',
-        marginBottom: 20,
         textAlign: 'center'
     },
 

@@ -1,54 +1,60 @@
 import React, { useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Location from "expo-location";
-import { MaterialIcons, Feather } from '@expo/vector-icons'
 import { Alert, Text, TouchableOpacity, View, FlatList, } from "react-native";
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import api from '../../services/api';
+import { CommonActions, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import moment from 'moment';
+import { MaterialIcons, Feather } from '@expo/vector-icons'
+import { StackNavigationProp } from '@react-navigation/stack';
 import styles from "./styles";
 
-import { TabParamList } from '../../types';
-import { StackNavigationProp } from '@react-navigation/stack';
+import api from '../../services/api';
 
+//Importando o type referente a essa tela
+import { TabParamList } from '../../types';
+
+/*Aqui é criado um type para que ao navegar entre telas seja possível passar 
+parâmetros definidos no StackParamList onde foi declarado quais parametros 
+cada tela recebe*/
 type screenNavigationType = StackNavigationProp<TabParamList, 'Agenda'>
 type scheduleScreenRouteType = RouteProp<TabParamList, 'Agenda'>
 
 export default function Schedule() {
-    const [schedule, setSchedule] = useState([]);
-
     const navigation = useNavigation<screenNavigationType>();
-    const { params } = useRoute<scheduleScreenRouteType>();
+    const route = useRoute<scheduleScreenRouteType>();
 
-    async function navigateBack() {
-        navigation.goBack()
-    }
+    const { params } = route;
 
+    const [appointment, setAppointment] = useState([]);
+    const [donor, setDonor] = useState([]);
 
-    // async function loadData() {
-    //     try {
-    //         const response = await api.get(`/schedules/list/${params.id}`, {
-    //             headers: {
+    useEffect(() => {
+        let mounted = true;
+        (async () => {
+            try {
+                const response = await api.get(`/schedule/list/hospital/${params.id}`);
+                if (mounted) {
+                    setAppointment(response.data);
+                }
+            } catch (err) {
+                Alert.alert('Algo deu errado!')
+            }
+        })();
 
-    //             }
-    //         });
+        return () => { mounted = false };
+    }, [appointment]);
 
-    //         setSchedules(response.data);
-    //     } catch (err) {
-    //         Alert.alert('Algo deu errado!')
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     loadData();
-    // }, []);
 
     async function handleLogout() {
         await AsyncStorage.clear();
 
-        navigation.reset({
-            index: 0,
-            routes: [{ name: 'Index' }],
-        });
+        navigation.dispatch(
+            CommonActions.reset({
+                index: 0,
+                routes: [
+                    { name: 'Index' }
+                ]
+            })
+        );
     }
 
     function createTwoButtonAlert() {
@@ -69,6 +75,17 @@ export default function Schedule() {
         );
     }
 
+    const goToScheduleDetails = (schedule: any) => {
+        navigation.dispatch(
+            CommonActions.navigate({
+                name: 'ScheduleDetails',
+                params: {
+                    schedule
+                }
+            })
+        )
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -80,37 +97,35 @@ export default function Schedule() {
                 </TouchableOpacity>
             </View>
             <View style={styles.viewFlatList}>
-                {/* <FlatList
-                    data={schedule}
-                    keyExtractor={commitment => String(commitment.id)}
-                    renderItem={({ item: commitment }) => ( */}
-                <View style={styles.schedule}>
-                    <View>
-                        <Text style={styles.hospitalProperty}>LOCAL</Text>
-                        {/* <Text style={styles.hospitalValue}>{commitment.company}</Text> */}
-                        <Text style={styles.hospitalValue}>Hospital Ipiranga - Mogi das Cruzes</Text>
-                    </View>
-                    <View>
-                        <Text style={styles.hospitalProperty}>ENDEREÇO</Text>
-                        {/* <Text style={styles.hospitalValue}>{commitment.phone}</Text> */}
-                        <Text style={styles.hospitalValue}>R. Ipiranga, 797 - Jardim Santista, Mogi das Cruzes - SP, 08730-000</Text>
-                    </View>
-                    <View>
-                        <Text style={styles.hospitalProperty}>DATA/HORÁRIO</Text>
-                        {/* <Text style={styles.hospitalValue}>{commitment.date}</Text> */}
-                        <Text style={styles.hospitalValue}>11/04/2022 - 14:00</Text>
-                    </View>
-                    <View style={styles.button}>
-                        <TouchableOpacity onPress={() => { }}>
-                            <Text style={styles.buttonText}>Detalhes...</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => { }}>
-                            <Feather name="arrow-right" color="#FF0000" size={20} onPress={() => { }} />
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                {/* )}
-                /> */}
+                <FlatList
+                    showsVerticalScrollIndicator={false}
+                    data={appointment}
+                    keyExtractor={(appointment: any) => String(appointment.id)}
+                    renderItem={({ item: appointment }) => (
+                        <View style={styles.schedule}>
+                            <View>
+                                <Text style={styles.hospitalProperty}>LOCAL</Text>
+                                <Text style={styles.hospitalValue}>{appointment.company}</Text>
+                            </View>
+                            <View>
+                                <Text style={styles.hospitalProperty}>ENDEREÇO</Text>
+                                <Text style={styles.hospitalValue}>{appointment.street}, {appointment.number} - {appointment.district}, {appointment.city} - {appointment.uf}, {appointment.zipCode}</Text>
+                            </View>
+                            <View>
+                                <Text style={styles.hospitalProperty}>DATA/HORÁRIO</Text>
+                                <Text style={styles.hospitalValue}>{moment(appointment.date_time).format('DD/MM/YYYY')} - {appointment.hour}</Text>
+                            </View>
+                            <View style={styles.button}>
+                                <TouchableOpacity onPress={() => goToScheduleDetails(appointment)}>
+                                    <Text style={styles.buttonText}>Detalhes...</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => { }}>
+                                    <Feather name="arrow-right" color="#A1E1D8" size={20} onPress={() => goToScheduleDetails(appointment)} />
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    )}
+                />
             </View>
         </View>
     );

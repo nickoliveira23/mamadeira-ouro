@@ -1,84 +1,87 @@
 import React, { useEffect, useState } from 'react';
+import { Alert, Text, TouchableOpacity, View, FlatList } from "react-native";
+import { CommonActions, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MaterialIcons, Feather } from '@expo/vector-icons'
 import * as Location from "expo-location";
-import { MaterialIcons, Feather, Ionicons } from '@expo/vector-icons'
-import { Alert, Text, Modal, TouchableOpacity, View, FlatList, StyleSheet, Pressable, } from "react-native";
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import api from '../../services/api';
+import { StackNavigationProp } from '@react-navigation/stack';
 import styles from "./styles";
 
-import { TabParamList } from '../../types';
-import { StackNavigationProp } from '@react-navigation/stack';
+import api from '../../services/api';
 
+//Importando o type referente a essa tela
+import { TabParamList } from '../../types';
+
+/*Aqui é criado um type para que ao navegar entre telas seja possível passar 
+parâmetros definidos no StackParamList onde foi declarado quais parametros 
+cada tela recebe*/
 type screenNavigationType = StackNavigationProp<TabParamList, 'Buscar'>
 type searchScreenRouteType = RouteProp<TabParamList, 'Buscar'>
 
 export default function Search() {
-    const [hospitals, setHospitals] = useState([]);
-    const [location, setLocation] = useState(null);
-    const [errorMsg, setErrorMsg] = useState('');
-
     const navigation = useNavigation<screenNavigationType>();
-    const { params } = useRoute<searchScreenRouteType>();
+    const route = useRoute<searchScreenRouteType>();
 
-    async function navigateBack() {
-        navigation.goBack()
-    }
+    const { params } = route;
+
+    const controller = new AbortController;
+    const signal = controller.signal;
+
+    const [hospitals, setHospitals] = useState([]);
+    const [location, setLocation] = useState<any>();
+    const [errorMsg, setErrorMsg] = useState('');
 
     async function getCurrentPosition() {
         let { status } = await Location.requestForegroundPermissionsAsync();
+
         if (status !== 'granted') {
-            setErrorMsg('Permission to access location was denied');
+            setErrorMsg('Permissão para acessar local negada!');
             return;
         }
         let currentLocation = await Location.getCurrentPositionAsync({});
 
         setLocation(currentLocation);
-    };
-
-    useEffect(() => {
-        getCurrentPosition();
-    }, []);
-
-    let flag = false;
-
-    let text = 'Carregando...';
-    if (errorMsg) {
-        text = errorMsg;
-    } else if (location) {
-        // text = JSON.stringify(location);
-        flag = true;
     }
 
-    async function loadData() {
+    useEffect(() => {
+        getCurrentPosition()
+    }, []);
+
+    async function loadData(signal: any) {
         try {
             if (flag === true) {
                 const response = await api.get('/hospital/list', {
+                    signal,
                     headers: {
                         latitude: location.coords.latitude,
                         longitude: location.coords.longitude
                     }
                 });
-
                 setHospitals(response.data);
                 setIsRefreshing(false)
             }
         } catch (err) {
-            Alert.alert('Algo deu errado!')
+            console.log(err)
         }
     };
 
     useEffect(() => {
-        loadData();
+        loadData(signal);
+        return () => controller.abort();
     }, [location]);
 
     async function handleLogout() {
         await AsyncStorage.clear();
 
-        navigation.reset({
-            index: 0,
-            routes: [{ name: 'Index' }],
-        });
+        navigation.dispatch(
+            CommonActions.reset({
+                index: 0,
+                routes: [
+                    { name: 'Index', }
+                ]
+
+            })
+        )
     }
 
     function createTwoButtonAlert() {
@@ -104,13 +107,29 @@ export default function Search() {
     const onRefresh = () => {
         //set isRefreshing to true
         setIsRefreshing(true);
-        getCurrentPosition();
-        loadData();
+        loadData(signal);
         // and set isRefreshing to false at the end of your callApiMethod()
     }
 
-    function goToHospitalDetails(hospital) {
-        navigation.navigate('HospitalDetails', { hospital })
+    const goToHospitalDetails = (hospital: any) => {
+        navigation.dispatch(
+            CommonActions.navigate({
+                name: 'HospitalDetails',
+                params: {
+                    hospital: hospital,
+                    id_user: params.id
+                }
+            })
+        )
+    }
+
+    let flag = false;
+
+    let text = 'Carregando...';
+    if (errorMsg) {
+        text = errorMsg;
+    } else if (location) {
+        flag = true;
     }
 
     return (
@@ -123,19 +142,19 @@ export default function Search() {
                     <MaterialIcons name={'logout'} size={25} color={'#414141'} />
                 </TouchableOpacity>
             </View>
-            <View style={styles.viewButtonSaved}>
+            {/* <View style={styles.viewButtonSaved}>
                 <TouchableOpacity style={styles.buttonSaved}>
                     <View style={styles.bookmarkIcon}>
-                        <Ionicons name="star" size={20} color="#76BFAC" />
+                        <Ionicons name="star" size={20} color="#A1E1D8" />
                     </View>
                     <View>
                         <Text style={styles.textSaved}>Mostrar hospitais salvos</Text>
                     </View>
                     <View style={styles.ArrowRightIcon}>
-                        <Feather name="arrow-right" size={20} color="#76BFAC" />
+                        <Feather name="arrow-right" size={20} color="#A1E1D8" />
                     </View>
                 </TouchableOpacity>
-            </View>
+            </View> */}
             <View style={styles.viewFlatList}>
                 {!flag && <Text style={styles.textWaiting}>{text}</Text>}
                 <FlatList
@@ -143,8 +162,7 @@ export default function Search() {
                     refreshing={isRefreshing}
                     data={hospitals}
                     showsVerticalScrollIndicator={false}
-                    keyExtractor={hospital => String(hospital.id)}
-
+                    keyExtractor={(hospital: any) => String(hospital.id)}
                     renderItem={({ item: hospital }) => (
                         <View style={styles.hospitals}>
                             <View>
@@ -162,7 +180,7 @@ export default function Search() {
                                     <Text style={styles.buttonText}>Detalhes...</Text>
                                 </TouchableOpacity>
                                 <View>
-                                    <Feather name="arrow-right" color="#76BFAC" size={20} onPress={() => goToHospitalDetails(hospital)} />
+                                    <Feather name="arrow-right" color="#A1E1D8" size={20} onPress={() => goToHospitalDetails(hospital)} />
                                 </View>
                             </View>
                         </View>
@@ -173,4 +191,3 @@ export default function Search() {
     );
 }
 
-  

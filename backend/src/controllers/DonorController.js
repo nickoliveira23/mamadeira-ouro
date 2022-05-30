@@ -34,8 +34,8 @@ module.exports = {
         }
     },
 
-     //Método de listagem de todos os doadores
-     async indexAll(request, response) {
+    //Método de listagem de todos os doadores
+    async indexAll(request, response) {
         try {
             /*Aqui é feito um select na tabela de doadora que povoa a váriavel 'donor' 
             com um objeto contendo todos os registros*/
@@ -68,8 +68,8 @@ module.exports = {
             return response.json(donor)
         } catch (err) {
             //Em caso de falha é exibido no terminal o erro
-            return response.json({ error: 'Falha ao exibir informações da doadora!' })
             console.log(err)
+            return response.json({ error: 'Falha ao exibir informações da doadora!' })
         }
 
     },
@@ -153,7 +153,6 @@ module.exports = {
 
             //Váriavel donorAge vai receber o retorno da função getAge que é a idade da doadora.
             const donorAge = getAge(birth)
-
 
             /*Váriaveis contendo todos os números decimais e caracteres especiais para que possamos
             verificar se o nome é valido*/

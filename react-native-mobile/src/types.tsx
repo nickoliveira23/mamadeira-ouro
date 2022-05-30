@@ -1,4 +1,3 @@
-import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { NavigatorScreenParams, } from '@react-navigation/native';
 
 export type StackParamList = {
@@ -11,7 +10,8 @@ export type StackParamList = {
     EditDonor: { id: string }
     Dependent: { id: string, id_donor: string }
     EditDependent: { id: string, id_donor: string, dependent: object }
-    HospitalDetails: { hospital: object }
+    HospitalDetails: { hospital: object, id_user: string }
+    ScheduleDetails: { schedule: object }
 };
 
 export type TabParamList = {

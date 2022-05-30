@@ -96,17 +96,23 @@ module.exports = {
 
     async verifyAvailability(request, response) {
         try {
+            // const hours = [
+            //     '7:30:00', '8:00:00',
+            //     '8:30:00', '9:00:00',
+            //     '9:30:00', '10:00:00',
+            //     '10:30:00', '11:00:00',
+            //     '11:30:00', '12:00:00',
+            //     '12:30:00', '13:00:00',
+            //     '13:30:00', '14:00:00',
+            //     '14:30:00', '15:00:00',
+            //     '15:30:00', '16:00:00',
+            //     '16:30:00', '17:00:00',
+            // ];
+
             const hours = [
-                '7:30:00', '8:00:00',
-                '8:30:00', '9:00:00',
-                '9:30:00', '10:00:00',
-                '10:30:00', '11:00:00',
-                '11:30:00', '12:00:00',
-                '12:30:00', '13:00:00',
-                '13:30:00', '14:00:00',
-                '14:30:00', '15:00:00',
-                '15:30:00', '16:00:00',
-                '16:30:00', '17:00:00',
+                '7:30:00', '8:00:00', '8:30:00', '9:00:00',
+                '9:30:00', '10:00:00', '10:30:00', '11:00:00',
+                '11:30:00'
             ];
 
             const { id } = request.params;
@@ -136,13 +142,6 @@ module.exports = {
                 occupiedDateHour[i] = { date: occupiedDateTime[i], hour: [occupiedHour[i]] }
             }
 
-            // const exampleList = available.filter((arr) => {
-            //     return 1;
-            // })
-
-            // console.log(exampleList)
-
-
             for (let i = 1; i <= daysInMonth; i++) {
                 let d = new Date(selectedYear, selectedMonth, i);
 
@@ -156,40 +155,36 @@ module.exports = {
                 listDates[i - 1] = { date: selDate.toLocaleDateString(), hour: hours };
             }
 
-            // newListDates = listDates.map((currentDateData) => {
-            //     const currentOccupiedDateHour = occupiedDateHour.find(dateData => dateData.date === currentDateData.date)
-            //     if (!currentOccupiedDateHour) {
-            //         return currentDateData
-            //     }
+            let array2 = []
 
-            //     return {
-            //         date: currentDateData.date,
-            //         hour: currentDateData.hour.filter(currentHour => !currentOccupiedDateHour.hour.includes(currentHour))
-            //     }
-            // })
+            occupiedDateHour.forEach(function (item) {
+                let existing = array2.filter(function (v, i) {
+                    return v.date == item.date;
+                });
+                if (existing.length) {
+                    let existingIndex = array2.indexOf(existing[0]);
+                    array2[existingIndex].hour = array2[existingIndex].hour.concat(item.hour);
+                } else {
+                    if (typeof item.hour == 'string')
+                        item.hour = [item.hour];
+                    array2.push(item);
+                }
+            });
 
-
-
-
-            const occupiedDateHourIndex = occupiedDateHour.reduce((acc, el) => {
-                acc[el.date] = el.hour;
-                return acc;
-            }, {});
+            console.log(array2);
 
 
-            const filterHours = (hours, excludeHours) => {
-                return hours.filter(h => !excludeHours.includes(h));
-            };
+            newListDates = listDates.map((currentDateData) => {
+                const currentOccupiedDateHour = array2.find(dateData => dateData.date === currentDateData.date)
+                if (!currentOccupiedDateHour) {
+                    return currentDateData
+                }
 
-
-
-            newListDates = listDates.map(el => {
-                const date = el.date;
-                const hour = filterHours(el.hour, occupiedDateHourIndex[date]);
-                return { date, hour }
+                return {
+                    date: currentDateData.date,
+                    hour: currentDateData.hour.filter(currentHour => !currentOccupiedDateHour.hour.includes(currentHour))
+                }
             })
-
-            // console.log(JSON.stringify(newListDates, null, 4))
 
             return response.json({ available: newListDates })
         } catch (error) {

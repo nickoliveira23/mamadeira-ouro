@@ -20,10 +20,8 @@ const styles = StyleSheet.create({
   },
 
   content: {
-    // flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    // backgroundColor: '#FFF',
     marginTop: '20%'
   },
 
@@ -42,12 +40,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: "#C3C3C5",
     padding: 5,
-    marginBottom: 40,
+    marginBottom: 20,
   },
-
-  // personIcon: {
-  //     paddingTop: 5,
-  // },
 
   passwordInput: {
     width: Dimensions.get('window').width - 100,
@@ -62,12 +56,12 @@ const styles = StyleSheet.create({
   rememberText: {
     color: '#C3C3C5',
     fontSize: 11,
+    marginTop: 50,
     textAlign: 'center'
   },
 
   errorMessage: {
     color: '#FF0000',
-    marginBottom: 20,
     textAlign: 'center'
   },
 

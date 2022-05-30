@@ -16,10 +16,10 @@ import Search from './pages/Search';
 import UserProfile from './pages/UserProfile';
 import Schedule from './pages/Schedule';
 import HospitalDetails from './pages/HospitalDetails';
+import ScheduleDetails from './pages/ScheduleDetails';
 
 import { TabParamList } from './types';
 import { StackParamList } from './types';
-
 
 const Tab = createBottomTabNavigator<TabParamList>();
 
@@ -35,15 +35,18 @@ function Home() {
             ? 'ios-home'
             : 'ios-home-outline';
         } else if (route.name === 'Buscar') {
-          iconName = focused ? 'ios-search' : 'ios-search-outline';
+          iconName = focused
+            ? 'ios-search'
+            : 'ios-search-outline';
         } else if (route.name === 'Agenda') {
-          iconName = focused ? 'ios-journal' : 'ios-journal-outline';
+          iconName = focused
+            ? 'ios-journal'
+            : 'ios-journal-outline';
         }
 
-        // You can return any component that you like here!
         return <Ionicons name={iconName} size={size} color={color} />;
       },
-      tabBarActiveTintColor: '#76BFAC',
+      tabBarActiveTintColor: '#A1E1D8',
       tabBarInactiveTintColor: 'gray',
     })}
     >
@@ -71,6 +74,7 @@ export default function Routes() {
         <Stack.Screen name='Register' component={Register} />
         <Stack.Screen name='Home' component={Home} />
         <Stack.Screen name='HospitalDetails' component={HospitalDetails} />
+        <Stack.Screen name='ScheduleDetails' component={ScheduleDetails} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -47,13 +47,6 @@ export default StyleSheet.create({
         marginBottom: 20,
     },
 
-    textWaiting: {
-        fontWeight: 'bold',
-        color: '#737380',
-        textAlign: 'center',
-        marginTop: "50%"
-      },
-
     profileProperty: {
         fontSize: 14,
         color: '#414141',

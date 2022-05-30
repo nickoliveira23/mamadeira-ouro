@@ -31,7 +31,6 @@ const styles = StyleSheet.create({
 
   viewFlatList: {
     flex: 1,
-
   },
 
   schedule: {
@@ -61,7 +60,7 @@ const styles = StyleSheet.create({
   },
 
   buttonText: {
-    color: "#FF0000",
+    color: "#A1E1D8",
     fontWeight: 'bold'
   }
 

@@ -59,6 +59,7 @@ routes.get('/collaborator/list/:id', CollaboratorController.indexById);
 routes.post('/schedule/register', ScheduleController.register);
 routes.get('/schedule/list/all', ScheduleController.indexAll)
 routes.get('/schedule/list/:id', ScheduleController.indexById)
+routes.get('/schedule/list/hospital/:user', ScheduleController.indexWithHospital)
 routes.delete('/schedule/delete/:id', ScheduleController.delete);
 
 

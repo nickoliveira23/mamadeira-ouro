@@ -1,20 +1,31 @@
 import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, Alert, FlatList } from 'react-native';
+import { RouteProp, useNavigation, useRoute, CommonActions } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import moment from 'moment';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { View, Text, TouchableOpacity, ScrollView, Alert, FlatList } from 'react-native';
 import styles from './styles';
+
 import api from '../../services/api';
 
+//Importando o type referente a essa tela
 import { TabParamList } from '../../types';
 
+/*Aqui é criado um type para que ao navegar entre telas seja possível passar 
+parâmetros definidos no StackParamList onde foi declarado quais parametros 
+cada tela recebe*/
 type screenNavigationType = StackNavigationProp<TabParamList, 'Perfil'>
 type profileScreenRouteType = RouteProp<TabParamList, 'Perfil'>
 
 export default function UserProfile() {
-    const { params } = useRoute<profileScreenRouteType>();
     const navigation = useNavigation<screenNavigationType>()
+    const route = useRoute<profileScreenRouteType>();
+
+    const { params } = route;
+
+    const controller = new AbortController
+    const signal = controller.signal;
 
     const [id, setId] = useState('');
     const [name, setName] = useState('');
@@ -26,42 +37,8 @@ export default function UserProfile() {
     const [uf, setUf] = useState('');
     const [zipCode, setZipCode] = useState('');
     const [phone, setPhone] = useState('');
-
     const [dependents, setDependents] = useState([]);
-
-    async function loadDonor() {
-        try {
-            const response = await api.get(`/donor/list/${params.id}`);
-
-            const donor = response.data;
-
-            setId(donor.id);
-            setName(donor.name);
-            setBirth(donor.birth);
-            setStreet(donor.street);
-            setNumber(JSON.stringify(donor.number));
-            setCity(donor.city);
-            setDistrict(donor.district);
-            setUf(donor.uf);
-            setZipCode(donor.zipCode);
-            setPhone(donor.phone);
-        } catch (err) {
-            console.log(err.response.data)
-        }
-    }
-
-    useEffect(() => {
-        loadDonor();
-    }, [params.id]);
-
-    async function handleLogout() {
-        await AsyncStorage.clear();
-
-        navigation.reset({
-            index: 0,
-            routes: [{ name: 'Index' }],
-        });
-    }
+    const [isRefreshing, setIsRefreshing] = useState(false)
 
     function createTwoButtonAlert() {
         Alert.alert(
@@ -81,17 +58,66 @@ export default function UserProfile() {
         );
     }
 
-    function goToDonorEdit() {
-        navigation.navigate('EditDonor', { id: params.id });
+    async function handleLogout() {
+        await AsyncStorage.clear();
+
+        navigation.dispatch(
+            CommonActions.reset({
+                index: 0,
+                routes: [
+                    { name: 'Index' }
+                ]
+            })
+        );
     }
 
-    function goToDependent() {
-        navigation.navigate('Dependent', { id: params.id, id_donor: id });
+    async function loadDonor(signal: AbortSignal) {
+        try {
+            const response = await api.get(`/donor/list/${params.id}`, {
+                signal,
+            });
+
+            setId(response.data.id);
+            setName(response.data.name);
+            setBirth(response.data.birth);
+            setStreet(response.data.street);
+            setNumber(JSON.stringify(response.data.number));
+            setCity(response.data.city);
+            setDistrict(response.data.district);
+            setUf(response.data.uf);
+            setZipCode(response.data.zipCode);
+            setPhone(response.data.phone);
+        } catch (err: any) {
+            console.log(err.response.data)
+            Alert.alert(err.response.data)
+        }
     }
 
-    function goToEditDependent(dependent) {
-        navigation.navigate('EditDependent', { id: params.id, id_donor: id, dependent });
-    }
+    useEffect(() => {
+        loadDonor(signal);
+        return () => controller.abort();
+    }, [params.id])
+
+    async function loadDependents(signal: AbortSignal) {
+        try {
+            if (flag === true) {
+                const response = await api.get(`/dependent/list/${id}`, {
+                    signal
+                });
+
+                setDependents(response.data);
+                setIsRefreshing(false)
+            }
+        } catch (err: any) {
+            console.log(err.response.data)
+            Alert.alert(err.response.data)
+        }
+    };
+
+    useEffect(() => {
+        loadDependents(signal);
+        return () => controller.abort();
+    }, [id]);
 
     let flag = false;
 
@@ -101,32 +127,48 @@ export default function UserProfile() {
         flag = true;
     }
 
-    async function loadDependents() {
-        try {
-            if (flag === true) {
-                const response = await api.get(`/dependent/list/${id}`);
-
-                setDependents(response.data);
-                setIsRefreshing(false)
-            }
-        } catch (err) {
-            console.log(err.response.data)
-        }
-    };
-
-    useEffect(() => {
-        loadDependents();
-    }, [id]);
-
-
-    const [isRefreshing, setIsRefreshing] = useState(false)
 
     const onRefresh = () => {
         //set isRefreshing to true
         setIsRefreshing(true);
-        loadDonor();
-        loadDependents();
+        loadDependents(signal);
         // and set isRefreshing to false at the end of your callApiMethod()
+    }
+
+    const goToDonorEdit = () => {
+        navigation.dispatch(
+            CommonActions.navigate({
+                name: 'EditDonor',
+                params: {
+                    id: params.id,
+                }
+            })
+        )
+    }
+
+    const goToDependent = () => {
+        navigation.dispatch(
+            CommonActions.navigate({
+                name: 'Dependent',
+                params: {
+                    id: params.id,
+                    id_donor: id
+                }
+            })
+        );
+    }
+
+    const goToEditDependent = (dependent: any) => {
+        navigation.dispatch(
+            CommonActions.navigate({
+                name: 'EditDependent',
+                params: {
+                    id: params.id,
+                    id_donor: id,
+                    dependent
+                }
+            })
+        );
     }
 
     return (
@@ -134,11 +176,11 @@ export default function UserProfile() {
             <View style={styles.viewFlatList}>
                 {!flag && <Text style={styles.textWaiting}>{text}</Text>}
                 <FlatList
+                    showsVerticalScrollIndicator={false}
                     onRefresh={onRefresh}
                     refreshing={isRefreshing}
                     data={dependents}
-                    showsVerticalScrollIndicator={false}
-                    keyExtractor={dependent => String(dependent.id)}
+                    keyExtractor={(dependent: any) => String(dependent.id)}
                     ListHeaderComponent={
                         <View>
                             <View style={styles.header}>
@@ -152,7 +194,7 @@ export default function UserProfile() {
 
                             <View style={styles.profile}>
                                 <TouchableOpacity style={styles.icon} onPress={goToDonorEdit}>
-                                    <FontAwesome name={'pencil-square-o'} size={25} color={'#76BFAC'}></FontAwesome>
+                                    <FontAwesome name={'pencil-square-o'} size={25} color={'#A1E1D8'}></FontAwesome>
                                 </TouchableOpacity>
                                 <View>
                                     <View>
@@ -162,9 +204,7 @@ export default function UserProfile() {
 
                                     <View>
                                         <Text style={[styles.profileProperty]}>DATA DE NASCIMENTO</Text>
-                                        <Text style={styles.profileValue}>{new Date(birth).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</Text>
-                                        {/* <Text style={styles.profileValue}>{new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC' }).format(birth)}</Text> */}
-
+                                        <Text style={styles.profileValue}>{moment(birth).format('DD/MM/YYYY')}</Text>
                                     </View>
                                 </View>
 
@@ -190,12 +230,12 @@ export default function UserProfile() {
                             </View>
                         </View>
                     }
-                    renderItem={({ item: dependent }) => (
+                    renderItem={({ item: dependent }: any) => (
                         <View>
                             {!flag && <Text style={styles.textWaiting}>{text}</Text>}
                             <View style={[styles.profile, { marginBottom: 20 }]}>
                                 <TouchableOpacity style={styles.icon} onPress={() => goToEditDependent(dependent)}>
-                                    <FontAwesome name={'pencil-square-o'} size={25} color={'#76BFAC'}></FontAwesome>
+                                    <FontAwesome name={'pencil-square-o'} size={25} color={'#A1E1D8'}></FontAwesome>
                                 </TouchableOpacity>
                                 <View>
                                     <View>
@@ -205,7 +245,7 @@ export default function UserProfile() {
 
                                     <View>
                                         <Text style={[styles.profileProperty]}>DATA DE NASCIMENTO</Text>
-                                        <Text style={styles.profileValue}>{new Date(dependent.birth).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</Text>
+                                        <Text style={styles.profileValue}>{moment(dependent.birth).format('DD/MM/YYYY')}</Text>
                                     </View>
                                 </View>
                             </View>
